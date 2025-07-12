@@ -42,9 +42,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Tests (optional)
-        run: |
-          echo "No tests defined yet"  # Replace this when you add pytest later
+      - name: Run Tests
+        run: pytest -v
+
 
       - name: Build Docker image
         run: |
