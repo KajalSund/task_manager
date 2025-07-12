@@ -1,0 +1,15 @@
+# Ignore Python virtual environments
+venv/
+
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyd
+*.pyc
+
+# Ignore dotenv files with secrets
+.env
+
