@@ -9,7 +9,7 @@ __pycache__/
 *.pyd
 *.pyd
 *.pyc
-
+.DS_Store
 # Ignore dotenv files with secrets
 .env
 
