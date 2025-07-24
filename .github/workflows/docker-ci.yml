@@ -52,3 +52,18 @@ jobs:
 
       - name: Show Docker images
         run: docker images
+  
+      - name: Push Docker image
+        run: docker push kajalks/task-manager-app:latest
+
+      - name: Deploy to Kubernetes using Helm
+        run: |
+          helm upgrade --install task-manager-app ./helm \
+            --set image.repository="kajalks/task-manager-app" \
+            --set image.tag="latest" \
+            --set env.SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+            --set env.ALGORITHM="${{ secrets.ALGORITHM }}" \
+            --set env.ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
+            --set postgres.user="${{ secrets.POSTGRES_USER }}" \
+            --set postgres.password="${{ secrets.POSTGRES_PASSWORD }}" \
+            --set postgres.db="${{ secrets.POSTGRES_DB }}"

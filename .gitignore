@@ -1,6 +1,6 @@
 # Ignore Python virtual environments
 venv/
-
+values_secret.yaml
 
 # Ignore Python cache files
 __pycache__/
