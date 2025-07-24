@@ -54,19 +54,34 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t kajalks/task-manager-app:latest .
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          docker build -t kajalks/task-manager-app:$IMAGE_TAG .
 
       - name: Show Docker images
         run: docker images
   
       - name: Push Docker image
-        run: docker push kajalks/task-manager-app:latest
+        run: docker push kajalks/task-manager-app:$IMAGE_TAG
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
 
-      - name: Deploy to Kubernetes using Helm
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
+      
+      - name: Install Helm
+        run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Deploy with Helm
         run: |
           helm upgrade --install task-manager-app ./helm \
             --set image.repository="kajalks/task-manager-app" \
-            --set image.tag="latest" \
+            --set image.tag="$IMAGE_TAG" \
             --set env.SECRET_KEY="${{ secrets.SECRET_KEY }}" \
             --set env.ALGORITHM="${{ secrets.ALGORITHM }}" \
             --set env.ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
