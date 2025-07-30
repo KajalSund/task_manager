@@ -1,6 +1,6 @@
 image:
   repository: kajalks/task-manager-app
-  tag: 2a121dc9aa8ad3baba8a6f87c08b7f9ae43a147d
+  tag: 29570cd63fa7578f94084a887d8b4a5de0fefd9e
 
 env:
   SECRET_KEY: ""
