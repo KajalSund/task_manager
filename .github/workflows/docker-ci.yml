@@ -9,27 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      ALGORITHM: ${{ secrets.ALGORITHM }}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -66,27 +45,17 @@ jobs:
       - name: Push Docker image
         run: docker push kajalks/task-manager-app:${{ env.IMAGE_TAG }}
       
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-
-      - name: Update kubeconfig
-        run: aws eks --region us-east-1 update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }}
-      
-      - name: Install Helm
-        run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-      - name: Deploy with Helm
+      # Update Helm values.yaml
+      - name: Update Helm values.yaml
         run: |
-          helm upgrade --install task-manager-app ./helm \
-            --set image.repository="kajalks/task-manager-app" \
-            --set image.tag=${{ env.IMAGE_TAG }} \
-            --set env.SECRET_KEY="${{ secrets.SECRET_KEY }}" \
-            --set env.ALGORITHM="${{ secrets.ALGORITHM }}" \
-            --set env.ACCESS_TOKEN_EXPIRE_MINUTES="${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" \
-            --set postgres.user="${{ secrets.POSTGRES_USER }}" \
-            --set postgres.password="${{ secrets.POSTGRES_PASSWORD }}" \
-            --set postgres.db="${{ secrets.POSTGRES_DB }}"
+          sed -i "s|tag:.*|tag: ${{ env.IMAGE_TAG }}|" helm/values.yaml
+
+      # Commit Helm change
+      - name: Commit Helm update
+        run: |
+          git config user.name "KajalSund"
+          git config user.email "kajal.sund9@gmail.com"
+          git add helm/values.yaml
+          git commit -m "Update image tag to ${{ env.IMAGE_TAG }}"
+          git push
+      
