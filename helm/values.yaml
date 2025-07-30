@@ -9,6 +9,6 @@ env:
 
 postgres:
   user: postgres
-  password: ""
+  password: root
   db: taskdb
   port: 5432
