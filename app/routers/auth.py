@@ -9,8 +9,8 @@ from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
 from app.config import settings
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+router = APIRouter(prefix="", tags=["Authentication"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 @router.post("/signup", response_model=UserOut)
 def signup(user: UserCreate, db: Session = Depends(database.get_db)):
@@ -23,17 +23,22 @@ def signup(user: UserCreate, db: Session = Depends(database.get_db)):
         username=user.username,
         email=user.email,
         hashed_password=hashed_pw,
-        role =user.role or "viewer"  # Default to viewer if not specified
+        role =user.role or "editor"  # Default to viewer if not specified
     )
+    print(f"Adding user: {new_user.username}, email: {new_user.email}")
     db.add(new_user)
     db.commit()
+    print("Committed to DB")
     db.refresh(new_user)
+    print(f"Refreshed user id: {new_user.id}")
     return new_user
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(database.get_db)):
+    print("Login attempt:", user.username)
     db_user = db.query(User).filter(User.username == user.username).first()
     if not db_user or not auth.verify_password(user.password, db_user.hashed_password):
+        print("User not found")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     token = auth.create_access_token(data={"sub": db_user.username})

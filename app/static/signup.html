@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signup</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="home.html">TaskManager</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="login.html">Login</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <h2 class="mb-4">Signup</h2>
+
+  <form id="signupForm" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+      <input type="text" id="username" class="form-control" placeholder="Enter username" required />
+      <div class="invalid-feedback">Please enter your username.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+      <input type="email" id="email" class="form-control" placeholder="Enter email" required />
+      <div class="invalid-feedback">Please enter a valid email address.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+      <input type="password" id="password" class="form-control" placeholder="Enter password" required />
+      <div class="invalid-feedback">Please enter a password.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+  </form>
+
+  <div id="msg"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const form = document.getElementById('signupForm');
+const msg = document.getElementById('msg');
+
+// Bootstrap form validation
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!form.checkValidity()) {
+    form.classList.add('was-validated');
+    return;
+  }
+
+  const data = {
+    username: form.username.value,
+    email: form.email.value,
+    password: form.password.value
+  };
+
+  const res = await fetch('/signup', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  });
+
+  const result = await res.json();
+  if (res.ok) {
+    msg.innerHTML = '<div class="alert alert-success" role="alert">Signup successful! You can now <a href="login.html">login</a>.</div>';
+    form.reset();
+    form.classList.remove('was-validated');
+  } else {
+    msg.innerHTML = `<div class="alert alert-danger" role="alert">Error: ${result.detail || 'Signup failed'}</div>`;
+  }
+});
+</script>
+</body>
+</html>

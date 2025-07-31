@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
-    role: Optional[str] = "viewer"  # Default to viewer if not specified
+    role: Optional[str] = "editor"  # Default to viewer if not specified
 class UserOut(BaseModel):
     id: int
     username: str

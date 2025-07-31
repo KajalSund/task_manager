@@ -10,7 +10,7 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(String, default="viewer")  # viewer or editor
+    role = Column(String, default="editor")  # viewer or editor
     tasks = relationship("Task", back_populates="owner")
 
    

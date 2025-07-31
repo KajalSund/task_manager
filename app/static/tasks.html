@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tasks</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="#">TaskManager</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <button id="logoutBtn" class="btn btn-light">Logout</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Task List</h2>
+    <button class="btn btn-primary" onclick="window.location.href='create_task.html'">
+      + Create New Task
+    </button>
+  </div>
+
+  <div id="taskList" class="row gy-3"></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const taskList = document.getElementById('taskList');
+const logoutBtn = document.getElementById('logoutBtn');
+
+logoutBtn.onclick = () => {
+  localStorage.removeItem('token');
+  window.location.href = 'login.html';
+}
+
+async function fetchTasks() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Please login first');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const res = await fetch('/tasks', {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+
+  if (res.ok) {
+    const tasks = await res.json();
+    taskList.innerHTML = '';
+    if (tasks.length === 0) {
+      taskList.innerHTML = '<p class="text-muted">No tasks found. Create a new task!</p>';
+      return;
+    }
+    tasks.forEach(task => {
+      const col = document.createElement('div');
+      col.className = 'col-md-6 col-lg-4';
+
+      const card = document.createElement('div');
+      card.className = 'card task-card';
+      card.onclick = () => window.location.href = `update_task.html?id=${task.id}`;
+
+      const cardBody = document.createElement('div');
+      cardBody.className = 'card-body';
+
+      const title = document.createElement('h5');
+      title.className = 'card-title';
+      title.textContent = task.title;
+
+      const desc = document.createElement('p');
+      desc.className = 'card-text text-truncate';
+      desc.textContent = task.description || 'No description';
+
+      cardBody.appendChild(title);
+      cardBody.appendChild(desc);
+      card.appendChild(cardBody);
+      col.appendChild(card);
+      taskList.appendChild(col);
+    });
+  } else {
+    alert('Failed to fetch tasks');
+  }
+}
+
+fetchTasks();
+</script>
+</body>
+</html>

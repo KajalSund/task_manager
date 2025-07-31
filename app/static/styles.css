@@ -1,0 +1,58 @@
+/* General Page Setup */
+body {
+  padding-top: 4.5rem;
+  background-color: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar Styling */
+.navbar {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+/* Buttons in Navbar */
+.navbar .btn-outline-light {
+  border-color: white;
+}
+.navbar .btn-outline-light:hover {
+  background-color: white;
+  color: #0d6efd;
+}
+
+/* Form Styling */
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}
+
+/* Inputs & Textareas */
+input, textarea {
+  margin-bottom: 1rem;
+}
+
+/* Message Box Styling */
+#msg {
+  margin-top: 15px;
+}
+
+/* Card Styling for Tasks */
+.task-card {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+.task-card:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+/* Page Headings */
+h2 {
+  font-weight: 600;
+  color: #333;
+}
