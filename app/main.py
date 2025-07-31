@@ -24,3 +24,7 @@ app.include_router(task.router)
 @app.get("/")
 def serve_home():
     return FileResponse(os.path.join("app/static", "home.html"))
+
+@app.get("/home")
+def home_api():
+    return {"message": "Task Manager API running!"}
